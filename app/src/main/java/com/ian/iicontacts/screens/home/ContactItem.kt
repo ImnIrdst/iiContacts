@@ -2,7 +2,7 @@ package com.ian.iicontacts.screens.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
@@ -17,11 +17,6 @@ import com.ian.iicontacts.ui.theme.*
 
 @Composable
 fun ItemContact(contact: Contact) {
-    Card(
-        Modifier
-            .padding(horizontal = spacingMedium, vertical = spacingTiny)
-            .clip(RoundedCornerShape(spacingMedium))
-    ) {
         Row(modifier = Modifier.padding(spacingSmall)) {
             Box(
                 modifier = Modifier
@@ -48,7 +43,10 @@ fun ItemContact(contact: Contact) {
                     .padding(horizontal = spacingMedium)
             ) {
                 Text(text = contact.name, modifier = Modifier.padding(vertical = spacingTiny))
-                Text(text = contact.phone, modifier = Modifier.padding(vertical = spacingTiny))
+                Text(
+                    text = contact.phoneNumber,
+                    modifier = Modifier.padding(vertical = spacingTiny)
+                )
             }
 
             Image(
@@ -61,7 +59,7 @@ fun ItemContact(contact: Contact) {
             )
         }
     }
-}
+
 
 @Preview
 @Composable

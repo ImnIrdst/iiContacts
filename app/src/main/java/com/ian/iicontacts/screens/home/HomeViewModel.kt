@@ -1,17 +1,22 @@
 package com.ian.iicontacts.screens.home
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.ian.iicontacts.data.local.ContactLocalDataSource
 import com.ian.iicontacts.domain.model.Contact
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val contactsLocalDataSource: ContactLocalDataSource = ContactLocalDataSource()
+) : ViewModel() {
 
     private val model = MutableStateFlow<List<Contact>>(listOf())
 
     val contactList: Flow<List<Contact>> = model
-        .map { it + Contact(name = "View Model", phone = "2142512512") }
 
     init {
-        model.value = Contact.dummyList
+        viewModelScope.launch {
+            model.value = contactsLocalDataSource.getContacts()
+        }
     }
 }
