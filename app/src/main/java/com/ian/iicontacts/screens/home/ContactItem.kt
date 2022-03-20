@@ -7,9 +7,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ian.iicontacts.R
 import com.ian.iicontacts.domain.model.Contact
 import com.ian.iicontacts.ui.theme.*
 
@@ -20,7 +22,7 @@ fun ItemContact(contact: Contact) {
             .padding(horizontal = spacingMedium, vertical = spacingTiny)
             .clip(RoundedCornerShape(spacingMedium))
     ) {
-        Row(modifier = Modifier.padding(spacingMedium)) {
+        Row(modifier = Modifier.padding(spacingSmall)) {
             Box(
                 modifier = Modifier
                     .size(dimenIconLarge)
@@ -38,14 +40,25 @@ fun ItemContact(contact: Contact) {
                 )
             }
 
+
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .padding(horizontal = spacingMedium)
             ) {
                 Text(text = contact.name, modifier = Modifier.padding(vertical = spacingTiny))
                 Text(text = contact.phone, modifier = Modifier.padding(vertical = spacingTiny))
             }
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
+                contentDescription = "Open ${contact.name}",
+                modifier = Modifier
+                    .padding(spacingSmall)
+                    .size(dimenIconSmall)
+                    .align(Alignment.CenterVertically),
+            )
         }
     }
 }
