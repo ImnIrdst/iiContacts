@@ -16,7 +16,8 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            model.value = contactsLocalDataSource.getContacts()
+            model.value =
+                Contact.dummyList + Contact.dummyList + Contact.dummyList // contactsLocalDataSource.getContacts()
         }
     }
 }

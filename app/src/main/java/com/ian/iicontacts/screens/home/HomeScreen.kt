@@ -1,10 +1,11 @@
 package com.ian.iicontacts.screens.home
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun HomeScreen(
@@ -16,6 +17,8 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        ListContacts(contacts.value)
+        Box(Modifier.statusBarsPadding()) {
+            ListContacts(contacts.value)
+        }
     }
 }

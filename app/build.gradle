@@ -55,6 +55,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.activity:activity-compose:1.4.0"
+    implementation 'com.google.accompanist:accompanist-insets:0.23.1'
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 

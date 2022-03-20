@@ -3,6 +3,8 @@
     <color name="orange_200">#ffc947</color>
     <color name="orange_500">#ff9800</color>
     <color name="orange_700">#F57C00</color>
+    <color name="dark_surface">#121212</color>
+    <color name="transparent">#00FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

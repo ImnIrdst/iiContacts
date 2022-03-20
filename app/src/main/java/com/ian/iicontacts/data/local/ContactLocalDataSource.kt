@@ -14,7 +14,6 @@ class ContactLocalDataSource(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-
     suspend fun getContacts() = withContext(ioDispatcher) {
 
         val list = mutableListOf<Contact>()
