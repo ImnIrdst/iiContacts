@@ -15,7 +15,6 @@ class ContactLocalDataSource(
 ) {
 
     suspend fun getContacts(offset: Int, loadSize: Int) = withContext(ioDispatcher) {
-
         val list = mutableListOf<Contact>()
         val cursor = appContext.contentResolver.query(
             Contacts.CONTENT_URI,

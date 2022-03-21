@@ -17,6 +17,7 @@ fun ListContacts(
     contactsPager: LazyPagingItems<Contact>,
 ) {
     val refreshState = contactsPager.loadState.refresh
+    val appendState = contactsPager.loadState.append
     val listState = rememberLazyListState()
 
     if (refreshState !is LoadState.Error) {
@@ -31,6 +32,11 @@ fun ListContacts(
             ) {
                 items(contactsPager) { contact ->
                     ItemContact(contact!!)
+                }
+                if (appendState == LoadState.Loading) {
+                    item {
+                        LoadingItem()
+                    }
                 }
             }
         }
