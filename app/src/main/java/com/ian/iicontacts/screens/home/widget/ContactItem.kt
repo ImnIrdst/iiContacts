@@ -1,4 +1,4 @@
-package com.ian.iicontacts.screens.home
+package com.ian.iicontacts.screens.home.widget
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
