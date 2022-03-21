@@ -14,45 +14,46 @@ class ContactLocalDataSource(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-    suspend fun getContacts() = withContext(ioDispatcher) {
+    suspend fun getContacts(offset: Int, loadSize: Int) = withContext(ioDispatcher) {
 
         val list = mutableListOf<Contact>()
         val cursor = appContext.contentResolver.query(
             Contacts.CONTENT_URI,
+            arrayOf(
+                Contacts._ID,
+                Contacts.HAS_PHONE_NUMBER,
+                Contacts.DISPLAY_NAME,
+            ),
             null,
             null,
-            null,
-            "${Contacts.DISPLAY_NAME} ASC",
+            "${Contacts.DISPLAY_NAME} ASC LIMIT $loadSize OFFSET $offset",
         ) ?: throw IllegalStateException("cannot initiate contact's cursor")
 
-        val idColumnIndex = cursor.getColumnIndex(Contacts._ID)
-        val hasPhoneNumberColumnIndexIndex = cursor.getColumnIndex(Contacts.HAS_PHONE_NUMBER)
+        val idIndex = cursor.getColumnIndex(Contacts._ID)
+        val displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME)
+        val hasPhoneNumbeIndex = cursor.getColumnIndex(Contacts.HAS_PHONE_NUMBER)
 
         if (cursor.count > 0) {
             while (cursor.moveToNext()) {
-                val contactId = cursor.getString(idColumnIndex)
-                if (cursor.getInt(hasPhoneNumberColumnIndexIndex) > 0) {
-                    list.addAll(getContactDetails(contactId))
-                }
+                list.addAll(
+                    getContactDetails(
+                        contactId = cursor.getString(idIndex),
+                        name = cursor.getString(displayNameIndex),
+                        hasPhoneNumber = cursor.getInt(hasPhoneNumbeIndex) > 0
+                    )
+                )
             }
             cursor.close()
         }
         return@withContext list
     }
 
-    private suspend fun getContactDetails(contactId: String) = withContext(ioDispatcher) {
+    private suspend fun getContactDetails(
+        contactId: String,
+        name: String,
+        hasPhoneNumber: Boolean
+    ) = withContext(ioDispatcher) {
         val list = mutableListOf<Contact>()
-
-        val cursorInfo = appContext.contentResolver.query(
-            CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            CommonDataKinds.Phone.CONTACT_ID + " = ?",
-            arrayOf(contactId),
-            null
-        ) ?: throw IllegalStateException("Failed to load the phone cursor")
-
-        val displayNameColumnIndex = cursorInfo.getColumnIndex(CommonDataKinds.Phone.DISPLAY_NAME)
-        val phoneNumberColumnsIndex = cursorInfo.getColumnIndex(CommonDataKinds.Phone.NUMBER)
 
         val inputStream = Contacts.openContactPhotoInputStream(
             appContext.contentResolver,
@@ -63,17 +64,44 @@ class ContactLocalDataSource(
         val pURI = Uri.withAppendedPath(person, Contacts.Photo.CONTENT_DIRECTORY)
         val photo: Bitmap? = inputStream?.let { BitmapFactory.decodeStream(it) }
 
-        while (cursorInfo.moveToNext()) {
-            val info = Contact(
-                contactId,
-                cursorInfo.getString(displayNameColumnIndex),
-                cursorInfo.getString(phoneNumberColumnsIndex),
-                photo,
-                pURI,
+        if (hasPhoneNumber) {
+            val cursorInfo = appContext.contentResolver.query(
+                CommonDataKinds.Phone.CONTENT_URI,
+                arrayOf(
+                    CommonDataKinds.Phone.DISPLAY_NAME,
+                    CommonDataKinds.Phone.NUMBER,
+                ),
+                CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                arrayOf(contactId),
+                null
+            ) ?: throw IllegalStateException("Failed to load the phone cursor")
+
+            val displayNameIndex = cursorInfo.getColumnIndex(CommonDataKinds.Phone.DISPLAY_NAME)
+            val phoneNumberIndex = cursorInfo.getColumnIndex(CommonDataKinds.Phone.NUMBER)
+
+            while (cursorInfo.moveToNext()) {
+                list.add(
+                    Contact(
+                        contactId,
+                        cursorInfo.getString(displayNameIndex),
+                        cursorInfo.getString(phoneNumberIndex),
+                        photo,
+                        pURI,
+                    )
+                )
+            }
+            cursorInfo.close()
+        } else {
+            list.add(
+                Contact(
+                    id = contactId,
+                    name = name,
+                    phoneNumber = "Nothing",
+                    photo = photo,
+                    photoURI = pURI,
+                )
             )
-            list.add(info)
         }
-        cursorInfo.close()
 
         return@withContext list
     }

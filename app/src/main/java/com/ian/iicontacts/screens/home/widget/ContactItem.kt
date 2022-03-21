@@ -17,48 +17,46 @@ import com.ian.iicontacts.ui.theme.*
 
 @Composable
 fun ItemContact(contact: Contact) {
-        Row(modifier = Modifier.padding(spacingSmall)) {
-            Box(
-                modifier = Modifier
-                    .size(dimenIconLarge)
-                    .clip(CircleShape)
-                    .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
-                    .background(Orange200)
-                    .align(Alignment.CenterVertically),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = contact.preview,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onPrimary
-                )
-            }
-
-
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = spacingMedium)
-            ) {
-                Text(text = contact.name, modifier = Modifier.padding(vertical = spacingTiny))
-                Text(
-                    text = contact.phoneNumber,
-                    modifier = Modifier.padding(vertical = spacingTiny)
-                )
-            }
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
-                contentDescription = "Open ${contact.name}",
-                modifier = Modifier
-                    .padding(spacingSmall)
-                    .size(dimenIconSmall)
-                    .align(Alignment.CenterVertically),
+    Row(modifier = Modifier.padding(horizontal = spacingMedium, vertical = spacingSmall)) {
+        Box(
+            modifier = Modifier
+                .size(dimenIconLarge)
+                .clip(CircleShape)
+                .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
+                .background(Orange200)
+                .align(Alignment.CenterVertically),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = contact.preview,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.onPrimary
             )
         }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = spacingMedium)
+        ) {
+            Text(text = contact.name, modifier = Modifier.padding(vertical = spacingTiny))
+            Text(
+                text = contact.phoneNumber,
+                modifier = Modifier.padding(vertical = spacingTiny)
+            )
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
+            contentDescription = "Open ${contact.name}",
+            modifier = Modifier
+                .padding(spacingSmall)
+                .size(dimenIconSmall)
+                .align(Alignment.CenterVertically),
+        )
     }
+}
 
 
 @Preview

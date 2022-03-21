@@ -3,40 +3,42 @@ package com.ian.iicontacts.screens.home.widget
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.paging.LoadState
+import androidx.paging.compose.*
 import com.google.accompanist.swiperefresh.*
-import com.ian.iicontacts.domain.model.*
-import com.ian.iicontacts.domain.model.Resource.*
+import com.ian.iicontacts.domain.model.Contact
 import com.ian.iicontacts.ui.theme.spacingMedium
-import com.ian.iicontacts.utils.isFailure
 
 @Composable
 fun ListContacts(
-    contactsResource: Resource<List<Contact>> = Success(Contact.dummyList),
-    onRefresh: () -> Unit = {}
+    contactsPager: LazyPagingItems<Contact>,
 ) {
+    val refreshState = contactsPager.loadState.refresh
+    val listState = rememberLazyListState()
 
-    val contactList = remember { mutableStateOf(listOf<Contact>()) }
-
-    if (contactsResource is Success) {
-        contactList.value = contactsResource.data
-    }
-    if (!contactsResource.isFailure()) {
+    if (refreshState !is LoadState.Error) {
         SwipeRefresh(
-            state = rememberSwipeRefreshState(contactsResource is Loading),
-            onRefresh = onRefresh,
+            state = rememberSwipeRefreshState(refreshState is LoadState.Loading),
+            onRefresh = { contactsPager.retry() },
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(vertical = spacingMedium),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
             ) {
-                items(contactList.value) { contact ->
-                    ItemContact(contact)
+                items(contactsPager) { contact ->
+                    ItemContact(contact!!)
                 }
             }
         }
     } else {
-        Text("Error happened while reading contacts: ${contactsResource.message}")
+        Text(
+            text = "Error happened while reading contacts: ${refreshState.error}",
+            modifier = Modifier.fillMaxSize(),
+            textAlign = TextAlign.Center
+        )
     }
 }
