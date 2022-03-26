@@ -9,12 +9,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.paging.LoadState
 import androidx.paging.compose.*
 import com.google.accompanist.swiperefresh.*
-import com.ian.iicontacts.domain.model.Contact
 import com.ian.iicontacts.ui.theme.spacingMedium
 
 @Composable
-fun ListContacts(
-    contactsPager: LazyPagingItems<Contact>,
+fun ContactListView(
+    contactsPager: LazyPagingItems<ContactItemModel>,
     loadingFlow: State<Boolean>,
 ) {
     val refreshState = contactsPager.loadState.refresh
@@ -34,7 +33,7 @@ fun ListContacts(
                 state = listState,
             ) {
                 items(contactsPager) { contact ->
-                    ItemContact(contact!!)
+                    ContactItemView(contact!!)
                 }
                 if (appendState == LoadState.Loading) {
                     item {

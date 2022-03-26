@@ -24,8 +24,8 @@ fun HomeScreen(
                 queryText = homeViewModel.queryFlow.collectAsState(),
                 onValueChanged = { homeViewModel.perform(HomeViewModel.Cmd.QueryChanged(it)) }
             )
-            ListContacts(
-                homeViewModel.contactFlow.collectAsLazyPagingItems(),
+            ContactListView(
+                homeViewModel.contactListFlow.collectAsLazyPagingItems(),
                 homeViewModel.loadingFlow.collectAsState(initial = true),
             )
         }

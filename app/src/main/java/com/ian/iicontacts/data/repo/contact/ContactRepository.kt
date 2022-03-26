@@ -12,9 +12,9 @@ class ContactRepository(
     private val contentProvider: ContactContentProvider = ContactContentProvider(),
 ) {
 
-    fun searchContactsFlow(query: String) =
+    fun filterContacts(query: String) =
         Pager(PagingConfig(pageSize = 25)) {
-            database.filterContactsByPhone(query.addWildCards())
+            database.filterContactsByPhone(query.withWildCards())
         }.flow
 
 
@@ -22,22 +22,23 @@ class ContactRepository(
         emit(Resource.Loading())
 
         var offset = 0
+        var loadSize = 50
         while (true) {
-            val contactList = contentProvider.getContacts(offset, BATCH_SIZE)
+            val contactList = contentProvider.getContacts(offset, loadSize)
 
             if (contactList.isEmpty()) {
                 break
             }
 
             database.insert(contactList)
-            offset += BATCH_SIZE
+
+            offset += loadSize
+            loadSize = 500
         }
         emit(Resource.Success(Unit))
     }
 
     companion object {
-        private const val BATCH_SIZE = 50
-
-        fun String.addWildCards() = "%${this.replace(' ', '%')}%"
+        fun String.withWildCards() = "%${this.replace(' ', '%')}%"
     }
 }
