@@ -18,11 +18,12 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-
-
         Column(Modifier.statusBarsPadding()) {
             TitleBar()
-            SearchTextField()
+            SearchTextField(
+                queryText = homeViewModel.queryFlow.collectAsState(),
+                onValueChanged = { homeViewModel.perform(HomeViewModel.Cmd.QueryChanged(it)) }
+            )
             ListContacts(
                 homeViewModel.contactFlow.collectAsLazyPagingItems(),
                 homeViewModel.loadingFlow.collectAsState(initial = true),

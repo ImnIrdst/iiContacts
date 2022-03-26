@@ -32,12 +32,11 @@ class ContactRepository(
             database.insert(contactList)
             offset += BATCH_SIZE
         }
-
         emit(Resource.Success(Unit))
     }
 
     companion object {
-        private const val BATCH_SIZE = 100
+        private const val BATCH_SIZE = 50
 
         fun String.addWildCards() = "%${this.replace(' ', '%')}%"
     }

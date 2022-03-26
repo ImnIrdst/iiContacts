@@ -14,12 +14,9 @@ import com.ian.iicontacts.R
 import com.ian.iicontacts.ui.theme.spacingMedium
 
 @Composable
-fun SearchTextField() {
-
-    val searchQuery = remember { mutableStateOf("") }
-
+fun SearchTextField(queryText: State<String>, onValueChanged: (String) -> Unit) {
     TextField(
-        value = searchQuery.value,
+        value = queryText.value,
         placeholder = { Text(text = "Search") },
         leadingIcon = {
             Icon(
@@ -46,7 +43,7 @@ fun SearchTextField() {
             unfocusedIndicatorColor = Color.Transparent,
         ),
         textStyle = MaterialTheme.typography.body1.copy(fontSize = 18.sp),
-        onValueChange = { searchQuery.value = it },
+        onValueChange = onValueChanged,
         modifier = Modifier
             .padding(horizontal = spacingMedium)
             .padding(vertical = spacingMedium)
