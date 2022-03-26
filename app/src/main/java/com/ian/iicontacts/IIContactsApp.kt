@@ -11,6 +11,8 @@ class IIContactsApp : Application() {
     }
 
     companion object {
-        var instance: IIContactsApp? = null
+        private var instance: IIContactsApp? = null
+
+        val instanceLazy by lazy { instance!! }
     }
 }

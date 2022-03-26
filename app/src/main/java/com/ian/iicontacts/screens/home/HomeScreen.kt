@@ -2,7 +2,7 @@ package com.ian.iicontacts.screens.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -23,7 +23,10 @@ fun HomeScreen(
         Column(Modifier.statusBarsPadding()) {
             TitleBar()
             SearchTextField()
-            ListContacts(homeViewModel.contacts.collectAsLazyPagingItems())
+            ListContacts(
+                homeViewModel.contactFlow.collectAsLazyPagingItems(),
+                homeViewModel.loadingFlow.collectAsState(initial = true),
+            )
         }
     }
 }

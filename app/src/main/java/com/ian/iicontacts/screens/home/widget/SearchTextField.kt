@@ -30,7 +30,7 @@ fun SearchTextField() {
         trailingIcon = {
             IconButton(
                 onClick = {
-                    Toast.makeText(IIContactsApp.instance, "Sort", Toast.LENGTH_SHORT)
+                    Toast.makeText(IIContactsApp.instanceLazy, "Sort", Toast.LENGTH_SHORT)
                         .show()
                 }
             ) {

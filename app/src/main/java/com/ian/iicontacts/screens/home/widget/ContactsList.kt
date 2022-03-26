@@ -3,7 +3,7 @@ package com.ian.iicontacts.screens.home.widget
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.paging.LoadState
@@ -15,6 +15,7 @@ import com.ian.iicontacts.ui.theme.spacingMedium
 @Composable
 fun ListContacts(
     contactsPager: LazyPagingItems<Contact>,
+    loadingFlow: State<Boolean>,
 ) {
     val refreshState = contactsPager.loadState.refresh
     val appendState = contactsPager.loadState.append
@@ -22,7 +23,9 @@ fun ListContacts(
 
     if (refreshState !is LoadState.Error) {
         SwipeRefresh(
-            state = rememberSwipeRefreshState(refreshState is LoadState.Loading),
+            state = rememberSwipeRefreshState(
+                isRefreshing = refreshState is LoadState.Loading || loadingFlow.value
+            ),
             onRefresh = { contactsPager.retry() },
         ) {
             LazyColumn(

@@ -1,7 +1,6 @@
-package com.ian.iicontacts.data.local
+package com.ian.iicontacts.data.local.provider.contact
 
 import android.content.*
-import android.graphics.*
 import android.net.Uri
 import android.provider.ContactsContract.*
 import com.ian.iicontacts.IIContactsApp
@@ -9,12 +8,12 @@ import com.ian.iicontacts.domain.model.Contact
 import kotlinx.coroutines.*
 
 
-class ContactLocalDataSource(
-    private val appContext: Context = IIContactsApp.instance!!.applicationContext,
+class ContactContentProvider(
+    private val appContext: Context = IIContactsApp.instanceLazy,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-    suspend fun getContacts(offset: Int, loadSize: Int) = withContext(ioDispatcher) {
+    suspend fun getContacts(offset: Int, loadSize: Int): List<Contact> = withContext(ioDispatcher) {
         val list = mutableListOf<Contact>()
         val cursor = appContext.contentResolver.query(
             Contacts.CONTENT_URI,
@@ -30,7 +29,7 @@ class ContactLocalDataSource(
 
         val idIndex = cursor.getColumnIndex(Contacts._ID)
         val displayNameIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME)
-        val hasPhoneNumbeIndex = cursor.getColumnIndex(Contacts.HAS_PHONE_NUMBER)
+        val hasPhoneNumberIndex = cursor.getColumnIndex(Contacts.HAS_PHONE_NUMBER)
 
         if (cursor.count > 0) {
             while (cursor.moveToNext()) {
@@ -38,7 +37,7 @@ class ContactLocalDataSource(
                     getContactDetails(
                         contactId = cursor.getString(idIndex),
                         name = cursor.getString(displayNameIndex),
-                        hasPhoneNumber = cursor.getInt(hasPhoneNumbeIndex) > 0
+                        hasPhoneNumber = cursor.getInt(hasPhoneNumberIndex) > 0
                     )
                 )
             }
@@ -54,14 +53,8 @@ class ContactLocalDataSource(
     ) = withContext(ioDispatcher) {
         val list = mutableListOf<Contact>()
 
-        val inputStream = Contacts.openContactPhotoInputStream(
-            appContext.contentResolver,
-            ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId.toLong())
-        )
-
         val person = ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId.toLong())
-        val pURI = Uri.withAppendedPath(person, Contacts.Photo.CONTENT_DIRECTORY)
-        val photo: Bitmap? = inputStream?.let { BitmapFactory.decodeStream(it) }
+        val photoURI = Uri.withAppendedPath(person, Contacts.Photo.CONTENT_DIRECTORY)
 
         if (hasPhoneNumber) {
             val cursorInfo = appContext.contentResolver.query(
@@ -81,11 +74,10 @@ class ContactLocalDataSource(
             while (cursorInfo.moveToNext()) {
                 list.add(
                     Contact(
-                        contactId,
-                        cursorInfo.getString(displayNameIndex),
-                        cursorInfo.getString(phoneNumberIndex),
-                        photo,
-                        pURI,
+                        id = contactId,
+                        name = cursorInfo.getString(displayNameIndex),
+                        phoneNumber = cursorInfo.getString(phoneNumberIndex),
+                        photoURI = photoURI,
                     )
                 )
             }
@@ -96,8 +88,7 @@ class ContactLocalDataSource(
                     id = contactId,
                     name = name,
                     phoneNumber = "Nothing",
-                    photo = photo,
-                    photoURI = pURI,
+                    photoURI = photoURI,
                 )
             )
         }

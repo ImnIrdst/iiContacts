@@ -1,23 +1,23 @@
 package com.ian.iicontacts.domain.model
 
-import android.graphics.Bitmap
 import android.net.Uri
+import androidx.room.*
 
+@Entity(tableName = "contact")
 data class Contact(
+    @PrimaryKey
     val id: String,
     val name: String,
     val phoneNumber: String,
-    val photo: Bitmap?,
     val photoURI: Uri?,
 ) {
-
     val preview: String
         get() = name.split("\\s+".toRegex()).let { "${it.first().first()}${it.last().first()}" }
 
     companion object {
 
         private fun dummyContactInitiator(name: String, mobileNumber: String) =
-            Contact("", name, mobileNumber, null, null)
+            Contact("", name, mobileNumber, null)
 
         val dummyList = listOf(
             dummyContactInitiator("Dummy Contact 0", "98215421521"),
